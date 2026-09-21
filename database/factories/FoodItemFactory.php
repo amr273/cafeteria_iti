@@ -25,6 +25,7 @@ class FoodItemFactory extends Factory
             'spicy_level' => $this->faker->numberBetween(0, 5),
             'available_quantity' => $this->faker->numberBetween(0, 20),
             'status' => true,
+            'image' => '../../img/pasta.jpeg'
         ];
     }
 }

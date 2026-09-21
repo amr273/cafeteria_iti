@@ -16,7 +16,8 @@ class FoodItem extends Model
         'price',
         'spicy_level',
         'available_quantity',
-        'status'
+        'status',
+        'image'
     ];
 
     protected $guarded = [];

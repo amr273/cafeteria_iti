@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class Beverage extends Model
 {
     use HasFactory;
-    protected $fillable = ['category_id', 'name', 'price', 'temperature', 'status'];
+    protected $fillable = ['category_id', 'name', 'price', 'temperature', 'status', 'image'];
     protected $guarded = [];
 
     // علاقة المشروب بالقسم

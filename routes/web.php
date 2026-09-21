@@ -8,7 +8,7 @@ use App\Http\Controllers\AiWebController;
 // الصفحة الرئيسية
 Route::get('/', function () {
     return view('welcome');
-});
+})->name('welcome');
 
 // كافة المسارات المحمية بتسجيل الدخول (Sanctum)
 Route::middleware([

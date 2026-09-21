@@ -23,6 +23,7 @@ class BeverageFactory extends Factory
             'price' => $this->faker->randomFloat(2, 20, 100),
             'temperature' => $this->faker->randomElement(['hot', 'cold', 'both']),
             'status' => true,
+            'image' => 'foods/sample.jpg'
         ];
     }
 }

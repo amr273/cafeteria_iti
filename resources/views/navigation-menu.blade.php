@@ -1,240 +1,149 @@
-<nav x-data="{ open: false }" class="bg-white border-b border-gray-100">
-    <!-- Primary Navigation Menu -->
+<nav x-data="{ open: false }" dir="rtl" class="font-['Cairo'] bg-white/95 backdrop-blur-md border-b border-gray-100 sticky top-0 z-50 shadow-sm">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="flex justify-between h-16">
-            <div class="flex">
-                <!-- Logo -->
-                <div class="shrink-0 flex items-center">
-                    <a href="{{ route('dashboard') }}">
-                        <x-application-mark class="block h-9 w-auto" />
-                    </a>
-                </div>
+        <div class="flex justify-between h-20 items-center">
 
-                <!-- Navigation Links -->
-                <!-- Navigation Links -->
-                <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex rtl:space-x-reverse">
-                    @if(auth()->user()->role === 'customer')
-                    <x-nav-link href="{{ route('customer.menu') }}" :active="request()->routeIs('customer.menu')">
-                        🍔 القائمة
-                    </x-nav-link>
-                    <x-nav-link href="{{ route('customer.preferences') }}" :active="request()->routeIs('customer.preferences')">
-                        ⚙️ تفضيلاتي
-                    </x-nav-link>
-                    <x-nav-link href="{{ route('customer.recommendations') }}" :active="request()->routeIs('customer.recommendations')">
-                        ✨ التوصيات الذكية
-                    </x-nav-link>
-                    <x-nav-link href="{{ route('customer.chatbot') }}" :active="request()->routeIs('customer.chatbot')">
-                        💬 الشات بوت
-                    </x-nav-link>
-                    <x-nav-link href="{{ route('customer.orders') }}" :active="request()->routeIs('customer.orders')">
-                        📋 طلباتي
-                    </x-nav-link>
-                    @endif
+            <!-- الجانب الأيمن: اسم الموقع والروابط -->
+            <div class="flex items-center gap-10">
+                <!-- اسم الموقع (العودة لصفحة welcome) -->
+                <a href="{{ route('welcome') }}" class="text-2xl font-black text-gray-900 tracking-tight hover:opacity-90 transition flex items-center gap-2">
+                    <span>☕</span> كافيه
+                </a>
 
-                    @if(auth()->user()->role === 'admin')
-                    <x-nav-link href="{{ route('admin.dashboard') }}" :active="request()->routeIs('admin.dashboard')">
-                        📊 لوحة التحكم
-                    </x-nav-link>
-                    @endif
+                <!-- روابط التنقل للشاشات الكبيرة -->
+                <div class="hidden md:flex items-center gap-2">
+                    @auth
+                        @if(auth()->user()->role === 'customer')
+                            <a href="{{ route('customer.menu') }}"
+                               class="px-4 py-2.5 rounded-xl text-sm font-bold transition-all duration-200 {{ request()->routeIs('customer.menu') ? 'bg-[#FF5200] text-white shadow-md shadow-orange-500/20' : 'text-gray-600 hover:text-[#FF5200] hover:bg-orange-50/80' }}">
+                                القائمة والطلب
+                            </a>
+
+                            <a href="{{ route('customer.preferences') }}"
+                               class="px-4 py-2.5 rounded-xl text-sm font-bold transition-all duration-200 {{ request()->routeIs('customer.preferences') ? 'bg-[#FF5200] text-white shadow-md shadow-orange-500/20' : 'text-gray-600 hover:text-[#FF5200] hover:bg-orange-50/80' }}">
+                                تفضيلاتي
+                            </a>
+
+                            <a href="{{ route('customer.recommendations') }}"
+                               class="px-4 py-2.5 rounded-xl text-sm font-bold transition-all duration-200 {{ request()->routeIs('customer.recommendations') ? 'bg-[#FF5200] text-white shadow-md shadow-orange-500/20' : 'text-gray-600 hover:text-[#FF5200] hover:bg-orange-50/80' }}">
+                                التوصيات الذكية
+                            </a>
+
+                            <a href="{{ route('customer.chatbot') }}"
+                               class="px-4 py-2.5 rounded-xl text-sm font-bold transition-all duration-200 {{ request()->routeIs('customer.chatbot') ? 'bg-[#FF5200] text-white shadow-md shadow-orange-500/20' : 'text-gray-600 hover:text-[#FF5200] hover:bg-orange-50/80' }}">
+                                الشات بوت
+                            </a>
+
+                            <a href="{{ route('customer.orders') }}"
+                               class="px-4 py-2.5 rounded-xl text-sm font-bold transition-all duration-200 {{ request()->routeIs('customer.orders') ? 'bg-[#FF5200] text-white shadow-md shadow-orange-500/20' : 'text-gray-600 hover:text-[#FF5200] hover:bg-orange-50/80' }}">
+                                طلباتي
+                            </a>
+                        @endif
+
+                        @if(auth()->user()->role === 'admin')
+                            <a href="{{ route('admin.dashboard') }}"
+                               class="px-4 py-2.5 rounded-xl text-sm font-bold transition-all duration-200 {{ request()->routeIs('admin.dashboard') ? 'bg-[#FF5200] text-white shadow-md shadow-orange-500/20' : 'text-gray-600 hover:text-[#FF5200] hover:bg-orange-50/80' }}">
+                                لوحة التحكم
+                            </a>
+                        @endif
+                    @else
+                        <!-- رابط المنيو للزائر غير المسجل -->
+                        <a href="{{ route('customer.menu') }}"
+                           class="px-4 py-2.5 rounded-xl text-sm font-bold transition-all duration-200 {{ request()->routeIs('customer.menu') ? 'bg-[#FF5200] text-white shadow-md shadow-orange-500/20' : 'text-gray-600 hover:text-[#FF5200] hover:bg-orange-50/80' }}">
+                            القائمة والطلب
+                        </a>
+                    @endauth
                 </div>
             </div>
 
-            <div class="hidden sm:flex sm:items-center sm:ms-6">
-                <!-- Teams Dropdown -->
-                @if (Laravel\Jetstream\Jetstream::hasTeamFeatures())
-                <div class="ms-3 relative">
-                    <x-dropdown align="right" width="60">
+            <!-- الجانب الأيسر: قائمة المستخدم أو أزرار الدخول -->
+            <div class="hidden sm:flex sm:items-center">
+                @auth
+                    <x-dropdown align="left" width="48">
                         <x-slot name="trigger">
-                            <span class="inline-flex rounded-md">
-                                <button type="button" class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-gray-500 bg-white hover:text-gray-700 focus:outline-none focus:bg-gray-50 active:bg-gray-50 transition ease-in-out duration-150">
-                                    {{ Auth::user()->currentTeam->name }}
-
-                                    <svg class="ms-2 -me-0.5 size-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 15L12 18.75 15.75 15m-7.5-6L12 5.25 15.75 9" />
-                                    </svg>
-                                </button>
-                            </span>
-                        </x-slot>
-
-                        <x-slot name="content">
-                            <div class="w-60">
-                                <!-- Team Management -->
-                                <div class="block px-4 py-2 text-xs text-gray-400">
-                                    {{ __('Manage Team') }}
-                                </div>
-
-                                <!-- Team Settings -->
-                                <x-dropdown-link href="{{ route('teams.show', Auth::user()->currentTeam->id) }}">
-                                    {{ __('Team Settings') }}
-                                </x-dropdown-link>
-
-                                @can('create', Laravel\Jetstream\Jetstream::newTeamModel())
-                                <x-dropdown-link href="{{ route('teams.create') }}">
-                                    {{ __('Create New Team') }}
-                                </x-dropdown-link>
-                                @endcan
-
-                                <!-- Team Switcher -->
-                                @if (Auth::user()->allTeams()->count() > 1)
-                                <div class="border-t border-gray-200"></div>
-
-                                <div class="block px-4 py-2 text-xs text-gray-400">
-                                    {{ __('Switch Teams') }}
-                                </div>
-
-                                @foreach (Auth::user()->allTeams() as $team)
-                                <x-switchable-team :team="$team" />
-                                @endforeach
-                                @endif
-                            </div>
-                        </x-slot>
-                    </x-dropdown>
-                </div>
-                @endif
-
-                <!-- Settings Dropdown -->
-                <div class="ms-3 relative">
-                    <x-dropdown align="right" width="48">
-                        <x-slot name="trigger">
-                            @if (Laravel\Jetstream\Jetstream::managesProfilePhotos())
-                            <button class="flex text-sm border-2 border-transparent rounded-full focus:outline-none focus:border-gray-300 transition">
-                                <img class="size-8 rounded-full object-cover" src="{{ Auth::user()->profile_photo_url }}" alt="{{ Auth::user()->name }}" />
+                            <button type="button" class="inline-flex items-center gap-2.5 px-4 py-2.5 border border-gray-200 rounded-xl text-sm font-bold text-gray-700 bg-gray-50 hover:bg-orange-50 hover:border-orange-200 hover:text-[#FF5200] transition-all duration-200">
+                                <span>{{ Auth::user()->name }}</span>
+                                <svg class="w-4 h-4 text-gray-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
+                                </svg>
                             </button>
-                            @else
-                            <span class="inline-flex rounded-md">
-                                <button type="button" class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-gray-500 bg-white hover:text-gray-700 focus:outline-none focus:bg-gray-50 active:bg-gray-50 transition ease-in-out duration-150">
-                                    {{ Auth::user()->name }}
-
-                                    <svg class="ms-2 -me-0.5 size-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
-                                        <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
-                                    </svg>
-                                </button>
-                            </span>
-                            @endif
                         </x-slot>
 
                         <x-slot name="content">
-                            <!-- Account Management -->
-                            <div class="block px-4 py-2 text-xs text-gray-400">
-                                {{ __('Manage Account') }}
+                            <div class="p-2 bg-white rounded-2xl shadow-xl border border-gray-100 min-w-[200px]">
+                                <div class="px-3 py-2 border-b border-gray-100 mb-1">
+                                    <p class="text-xs text-gray-400 font-bold">حساب المستخدم</p>
+                                    <p class="text-sm font-bold text-gray-800 truncate">{{ Auth::user()->name }}</p>
+                                </div>
+
+                                <a href="{{ route('profile.show') }}" class="block px-3 py-2 rounded-lg text-sm font-bold text-gray-700 hover:bg-orange-50 hover:text-[#FF5200] transition">
+                                    الملف الشخصي
+                                </a>
+
+                                <div class="border-t border-gray-100 my-1"></div>
+
+                                <form method="POST" action="{{ route('logout') }}" x-data>
+                                    @csrf
+                                    <a href="{{ route('logout') }}" @click.prevent="$root.submit();" class="block px-3 py-2 rounded-lg text-sm font-bold text-red-600 hover:bg-red-50 transition">
+                                        تسجيل الخروج
+                                    </a>
+                                </form>
                             </div>
-
-                            <x-dropdown-link href="{{ route('profile.show') }}">
-                                {{ __('Profile') }}
-                            </x-dropdown-link>
-
-                            @if (Laravel\Jetstream\Jetstream::hasApiFeatures())
-                            <x-dropdown-link href="{{ route('api-tokens.index') }}">
-                                {{ __('API Tokens') }}
-                            </x-dropdown-link>
-                            @endif
-
-                            <div class="border-t border-gray-200"></div>
-
-                            <!-- Authentication -->
-                            <form method="POST" action="{{ route('logout') }}" x-data>
-                                @csrf
-
-                                <x-dropdown-link href="{{ route('logout') }}"
-                                    @click.prevent="$root.submit();">
-                                    {{ __('Log Out') }}
-                                </x-dropdown-link>
-                            </form>
                         </x-slot>
                     </x-dropdown>
-                </div>
+                @else
+                    <!-- أزرار تسجيل الدخول للزوار -->
+                    <div class="flex items-center gap-3">
+                        <a href="{{ route('login') }}" class="px-4 py-2.5 rounded-xl text-sm font-bold text-gray-700 hover:text-[#FF5200] hover:bg-orange-50 transition">
+                            تسجيل الدخول
+                        </a>
+                        <a href="{{ route('register') }}" class="px-4 py-2.5 rounded-xl text-sm font-bold text-white bg-[#FF5200] hover:bg-orange-600 transition shadow-md shadow-orange-500/20">
+                            حساب جديد
+                        </a>
+                    </div>
+                @endauth
             </div>
 
-            <!-- Hamburger -->
-            <div class="-me-2 flex items-center sm:hidden">
-                <button @click="open = ! open" class="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100 focus:outline-none focus:bg-gray-100 focus:text-gray-500 transition duration-150 ease-in-out">
-                    <svg class="size-6" stroke="currentColor" fill="none" viewBox="0 0 24 24">
-                        <path :class="{'hidden': open, 'inline-flex': ! open }" class="inline-flex" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
-                        <path :class="{'hidden': ! open, 'inline-flex': open }" class="hidden" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+            <!-- زر القائمة للموبايل -->
+            <div class="flex items-center md:hidden">
+                <button @click="open = ! open" class="p-2.5 rounded-xl text-gray-600 bg-gray-50 hover:bg-orange-50 hover:text-[#FF5200] focus:outline-none transition">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path x-show="!open" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                        <path x-show="open" x-cloak stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
                     </svg>
                 </button>
             </div>
         </div>
     </div>
 
-    <!-- Responsive Navigation Menu -->
-    <div :class="{'block': open, 'hidden': ! open}" class="hidden sm:hidden">
-        <div class="pt-2 pb-3 space-y-1">
-            <x-responsive-nav-link href="{{ route('dashboard') }}" :active="request()->routeIs('dashboard')">
-                {{ __('Dashboard') }}
-            </x-responsive-nav-link>
-        </div>
+    <!-- قائمة الموبايل المنسدلة -->
+    <div x-show="open" x-cloak class="md:hidden bg-white border-t border-gray-100 shadow-xl p-4 space-y-2">
+        @auth
+            @if(auth()->user()->role === 'customer')
+                <a href="{{ route('customer.menu') }}" class="block px-4 py-3 rounded-xl font-bold text-sm transition {{ request()->routeIs('customer.menu') ? 'bg-[#FF5200] text-white shadow-md' : 'text-gray-700 hover:bg-orange-50' }}">القائمة والطلب</a>
+                <a href="{{ route('customer.preferences') }}" class="block px-4 py-3 rounded-xl font-bold text-sm transition {{ request()->routeIs('customer.preferences') ? 'bg-[#FF5200] text-white shadow-md' : 'text-gray-700 hover:bg-orange-50' }}">تفضيلاتي</a>
+                <a href="{{ route('customer.recommendations') }}" class="block px-4 py-3 rounded-xl font-bold text-sm transition {{ request()->routeIs('customer.recommendations') ? 'bg-[#FF5200] text-white shadow-md' : 'text-gray-700 hover:bg-orange-50' }}">التوصيات الذكية</a>
+                <a href="{{ route('customer.chatbot') }}" class="block px-4 py-3 rounded-xl font-bold text-sm transition {{ request()->routeIs('customer.chatbot') ? 'bg-[#FF5200] text-white shadow-md' : 'text-gray-700 hover:bg-orange-50' }}">الشات بوت</a>
+                <a href="{{ route('customer.orders') }}" class="block px-4 py-3 rounded-xl font-bold text-sm transition {{ request()->routeIs('customer.orders') ? 'bg-[#FF5200] text-white shadow-md' : 'text-gray-700 hover:bg-orange-50' }}">طلباتي</a>
+            @endif
 
-        <!-- Responsive Settings Options -->
-        <div class="pt-4 pb-1 border-t border-gray-200">
-            <div class="flex items-center px-4">
-                @if (Laravel\Jetstream\Jetstream::managesProfilePhotos())
-                <div class="shrink-0 me-3">
-                    <img class="size-10 rounded-full object-cover" src="{{ Auth::user()->profile_photo_url }}" alt="{{ Auth::user()->name }}" />
-                </div>
-                @endif
+            @if(auth()->user()->role === 'admin')
+                <a href="{{ route('admin.dashboard') }}" class="block px-4 py-3 rounded-xl font-bold text-sm transition {{ request()->routeIs('admin.dashboard') ? 'bg-[#FF5200] text-white shadow-md' : 'text-gray-700 hover:bg-orange-50' }}">لوحة التحكم</a>
+            @endif
 
-                <div>
-                    <div class="font-medium text-base text-gray-800">{{ Auth::user()->name }}</div>
-                    <div class="font-medium text-sm text-gray-500">{{ Auth::user()->email }}</div>
-                </div>
-            </div>
-
-            <div class="mt-3 space-y-1">
-                <!-- Account Management -->
-                <x-responsive-nav-link href="{{ route('profile.show') }}" :active="request()->routeIs('profile.show')">
-                    {{ __('Profile') }}
-                </x-responsive-nav-link>
-
-                @if (Laravel\Jetstream\Jetstream::hasApiFeatures())
-                <x-responsive-nav-link href="{{ route('api-tokens.index') }}" :active="request()->routeIs('api-tokens.index')">
-                    {{ __('API Tokens') }}
-                </x-responsive-nav-link>
-                @endif
-
-                <!-- Authentication -->
+            <div class="pt-3 border-t border-gray-100 space-y-1">
+                <div class="px-4 py-1 text-xs text-gray-400 font-bold">{{ Auth::user()->name }}</div>
+                <a href="{{ route('profile.show') }}" class="block px-4 py-2 rounded-lg text-sm font-bold text-gray-700 hover:bg-gray-100">الملف الشخصي</a>
                 <form method="POST" action="{{ route('logout') }}" x-data>
                     @csrf
-
-                    <x-responsive-nav-link href="{{ route('logout') }}"
-                        @click.prevent="$root.submit();">
-                        {{ __('Log Out') }}
-                    </x-responsive-nav-link>
+                    <a href="{{ route('logout') }}" @click.prevent="$root.submit();" class="block px-4 py-2 rounded-lg text-sm font-bold text-red-600 hover:bg-red-50">تسجيل الخروج</a>
                 </form>
-
-                <!-- Team Management -->
-                @if (Laravel\Jetstream\Jetstream::hasTeamFeatures())
-                <div class="border-t border-gray-200"></div>
-
-                <div class="block px-4 py-2 text-xs text-gray-400">
-                    {{ __('Manage Team') }}
-                </div>
-
-                <!-- Team Settings -->
-                <x-responsive-nav-link href="{{ route('teams.show', Auth::user()->currentTeam->id) }}" :active="request()->routeIs('teams.show')">
-                    {{ __('Team Settings') }}
-                </x-responsive-nav-link>
-
-                @can('create', Laravel\Jetstream\Jetstream::newTeamModel())
-                <x-responsive-nav-link href="{{ route('teams.create') }}" :active="request()->routeIs('teams.create')">
-                    {{ __('Create New Team') }}
-                </x-responsive-nav-link>
-                @endcan
-
-                <!-- Team Switcher -->
-                @if (Auth::user()->allTeams()->count() > 1)
-                <div class="border-t border-gray-200"></div>
-
-                <div class="block px-4 py-2 text-xs text-gray-400">
-                    {{ __('Switch Teams') }}
-                </div>
-
-                @foreach (Auth::user()->allTeams() as $team)
-                <x-switchable-team :team="$team" component="responsive-nav-link" />
-                @endforeach
-                @endif
-                @endif
             </div>
-        </div>
+        @else
+            <a href="{{ route('customer.menu') }}" class="block px-4 py-3 rounded-xl font-bold text-sm transition {{ request()->routeIs('customer.menu') ? 'bg-[#FF5200] text-white shadow-md' : 'text-gray-700 hover:bg-orange-50' }}">القائمة والطلب</a>
+            <div class="pt-3 border-t border-gray-100 space-y-2">
+                <a href="{{ route('login') }}" class="block w-full text-center px-4 py-2.5 rounded-xl font-bold text-sm text-gray-700 hover:bg-orange-50">تسجيل الدخول</a>
+                <a href="{{ route('register') }}" class="block w-full text-center px-4 py-2.5 rounded-xl font-bold text-sm text-white bg-[#FF5200]">حساب جديد</a>
+            </div>
+        @endauth
     </div>
 </nav>
