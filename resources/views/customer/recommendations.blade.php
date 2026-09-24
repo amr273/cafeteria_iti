@@ -305,12 +305,12 @@
         </div>
 
         <!-- قسم المشروبات المقترحة -->
-        <!-- <div class="flex items-center gap-2 mb-4">
+        <div class="flex items-center gap-2 mb-4">
             <i class="fa-solid fa-mug-hot text-emerald-600 text-xl"></i>
             <h4 class="text-xl font-extrabold text-gray-800 m-0">المشروبات الموصى بها</h4>
-        </div> -->
+        </div>
 
-        <!-- <div class="products-grid">
+        <div class="products-grid">
             @forelse($recommendedBeverages as $beverage)
                 <div class="product-card">
                     <div class="product-img-wrapper">
@@ -345,7 +345,7 @@
                     <p class="m-0 font-bold">لا توجد مشروبات مقترحة حالياً.</p>
                 </div>
             @endforelse
-        </div> -->
+        </div>
 
     </div>
 
