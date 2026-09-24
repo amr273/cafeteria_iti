@@ -21,7 +21,7 @@ Route::middleware([
     Route::get('/dashboard', function () {
         return auth()->user()->role === 'admin'
             ? redirect()->route('admin.dashboard')
-            : redirect()->route('customer.menu');
+            : redirect()->route('welcome');
     })->name('dashboard');
 
     // معالجة الذكاء الاصطناعي

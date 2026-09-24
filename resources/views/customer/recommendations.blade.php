@@ -5,12 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>التوصيات الذكية - الكافتيريا الذكية</title>
-    
+
     <!-- Google Fonts: Cairo -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800;900&display=swap" rel="stylesheet">
-    
+
     <!-- FontAwesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
@@ -274,13 +274,13 @@
                         <span class="badge-ai"><i class="fa-solid fa-sparkles me-1"></i> موصى به</span>
                         <img src="{{ $food->image ? asset('storage/' . $food->image) : 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=500' }}" alt="{{ $food->name }}" class="product-img">
                     </div>
-                    
+
                     <div class="product-info">
                         <div>
                             <h5 class="product-title">{{ $food->name }}</h5>
                             <p class="product-desc">{{ $food->description ?? 'وجبة مميزة ومجهزة خصيصاً بجودة عالية.' }}</p>
                         </div>
-                        
+
                         <div class="product-footer">
                             <span class="product-price">{{ number_format($food->price, 2) }} ج.م</span>
 
@@ -305,12 +305,12 @@
         </div>
 
         <!-- قسم المشروبات المقترحة -->
-        <div class="flex items-center gap-2 mb-4">
+        <!-- <div class="flex items-center gap-2 mb-4">
             <i class="fa-solid fa-mug-hot text-emerald-600 text-xl"></i>
             <h4 class="text-xl font-extrabold text-gray-800 m-0">المشروبات الموصى بها</h4>
-        </div>
+        </div> -->
 
-        <div class="products-grid">
+        <!-- <div class="products-grid">
             @forelse($recommendedBeverages as $beverage)
                 <div class="product-card">
                     <div class="product-img-wrapper">
@@ -345,7 +345,7 @@
                     <p class="m-0 font-bold">لا توجد مشروبات مقترحة حالياً.</p>
                 </div>
             @endforelse
-        </div>
+        </div> -->
 
     </div>
 
@@ -353,6 +353,6 @@
     @include('components.footer')
 
     @livewireScripts
-    
+
 </body>
 </html>
