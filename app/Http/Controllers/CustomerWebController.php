@@ -5,11 +5,13 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Schema;
 use App\Models\Order;
 use App\Models\OrderItem;
 use App\Models\FoodItem;
 use App\Models\Beverage;
 use App\Models\Category;
+use App\Models\CustomerPreference;
 
 class CustomerWebController extends Controller
 {
@@ -313,10 +315,80 @@ class CustomerWebController extends Controller
      */
     public function recommendations()
     {
-        $recommendedFoods = FoodItem::inRandomOrder()->take(3)->get();
-        $recommendedBeverages = Beverage::inRandomOrder()->take(3)->get();
+        $user = auth()->user();
+        $preference = $user ? $user->preference()->first() : null;
 
-        return view('customer.recommendations', compact('recommendedFoods', 'recommendedBeverages'));
+        $foodQuery = FoodItem::query()->where('status', true);
+        $beverageQuery = Beverage::query()->where('status', true);
+
+        if ($preference && !empty($preference->price_preference)) {
+            $maxBudget = (float) $preference->price_preference;
+            $foodQuery->where('price', '<=', $maxBudget + 20);
+            $beverageQuery->where('price', '<=', $maxBudget + 15);
+        }
+
+        if ($preference && !empty($preference->spicy_level)) {
+            $spicyLevel = (int) $preference->spicy_level;
+            $foodQuery->whereBetween('spicy_level', [max(0, $spicyLevel - 1), min(5, $spicyLevel + 1)]);
+        }
+
+        $foods = $foodQuery->get();
+        $beverages = $beverageQuery->get();
+
+        $recommendedFoods = $foods->map(function ($food) use ($preference) {
+            $food->recommendation_score = $this->calculateRecommendationScore($food, $preference);
+            return $food;
+        })->sort(function ($first, $second) use ($preference) {
+            $score = $second->recommendation_score <=> $first->recommendation_score;
+            if ($score !== 0) {
+                return $score;
+            }
+
+            $firstPriceDelta = $preference && !empty($preference->price_preference)
+                ? abs((float) $first->price - (float) $preference->price_preference)
+                : (float) $first->price;
+            $secondPriceDelta = $preference && !empty($preference->price_preference)
+                ? abs((float) $second->price - (float) $preference->price_preference)
+                : (float) $second->price;
+
+            $priceDelta = $firstPriceDelta <=> $secondPriceDelta;
+            if ($priceDelta !== 0) {
+                return $priceDelta;
+            }
+
+            return strcmp((string) $first->name, (string) $second->name);
+        })->take(3)->values();
+
+        $recommendedBeverages = $beverages->map(function ($beverage) use ($preference) {
+            $beverage->recommendation_score = $this->calculateRecommendationScore($beverage, $preference);
+            return $beverage;
+        })->sort(function ($first, $second) use ($preference) {
+            $score = $second->recommendation_score <=> $first->recommendation_score;
+            if ($score !== 0) {
+                return $score;
+            }
+
+            $firstPriceDelta = $preference && !empty($preference->price_preference)
+                ? abs((float) $first->price - (float) $preference->price_preference)
+                : (float) $first->price;
+            $secondPriceDelta = $preference && !empty($preference->price_preference)
+                ? abs((float) $second->price - (float) $preference->price_preference)
+                : (float) $second->price;
+
+            $priceDelta = $firstPriceDelta <=> $secondPriceDelta;
+            if ($priceDelta !== 0) {
+                return $priceDelta;
+            }
+
+            return strcmp((string) $first->name, (string) $second->name);
+        })->take(3)->values();
+
+        if (!$preference) {
+            $recommendedFoods = $foodQuery->orderBy('price')->take(3)->get();
+            $recommendedBeverages = $beverageQuery->orderBy('price')->take(3)->get();
+        }
+
+        return view('customer.recommendations', compact('recommendedFoods', 'recommendedBeverages', 'preference'));
     }
 
     /**
@@ -324,7 +396,9 @@ class CustomerWebController extends Controller
      */
     public function preferences()
     {
-        return view('customer.preferences');
+        $preference = auth()->user()?->preference()->first();
+
+        return view('customer.preferences', compact('preference'));
     }
 
     /**
@@ -332,7 +406,63 @@ class CustomerWebController extends Controller
      */
     public function updatePreferences(Request $request)
     {
-        return redirect()->back()->with('success', 'تم حفظ التفضيلات بنجاح.');
+        $validated = $request->validate([
+            'spicy_level' => ['required', 'integer', 'min:0', 'max:5'],
+            'price_preference' => ['required', 'numeric', 'min:0'],
+            'preferred_taste' => ['nullable', 'string', 'max:255'],
+        ]);
+
+        $preference = auth()->user()->preference()->updateOrCreate(
+            ['user_id' => auth()->id()],
+            [
+                'spicy_level' => (int) $validated['spicy_level'],
+                'price_preference' => $validated['price_preference'],
+                'preferred_taste' => trim((string) ($validated['preferred_taste'] ?? '')),
+            ]
+        );
+
+        return redirect()->route('customer.recommendations')->with('success', 'تم حفظ تفضيلاتك بنجاح، وتم تحديث اقتراحاتك الذكية.');
+    }
+
+    protected function calculateRecommendationScore($item, ?CustomerPreference $preference = null): int
+    {
+        if (!$preference) {
+            return 1;
+        }
+
+        $score = 0;
+
+        if (isset($item->price) && !empty($preference->price_preference)) {
+            if ((float) $item->price <= (float) $preference->price_preference) {
+                $score += 5;
+            } elseif ((float) $item->price <= (float) $preference->price_preference + 20) {
+                $score += 2;
+            }
+        }
+
+        if (isset($item->spicy_level) && !empty($preference->spicy_level)) {
+            $difference = abs((int) $item->spicy_level - (int) $preference->spicy_level);
+            if ($difference === 0) {
+                $score += 4;
+            } elseif ($difference === 1) {
+                $score += 2;
+            }
+        }
+
+        if (!empty($preference->preferred_taste)) {
+            $taste = trim($preference->preferred_taste);
+            $descriptionText = (string) ($item->description ?? '');
+            $haystack = strtolower(($item->name ?? '') . ' ' . $descriptionText);
+
+            foreach (preg_split('/[،,]/', $taste, -1, PREG_SPLIT_NO_EMPTY) as $term) {
+                $term = trim(strtolower($term));
+                if ($term !== '' && str_contains($haystack, $term)) {
+                    $score += 6;
+                }
+            }
+        }
+
+        return $score;
     }
 
     /**
